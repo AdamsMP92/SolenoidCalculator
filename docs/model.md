@@ -94,7 +94,20 @@ Em = 1/2 L0 I^2
    = 1/(2 mu0) integral_R3 |B_tilde(q)|^2 d^3q.
 ```
 
-For `q > 0`, the magnetostatic Maxwell equations give
+The continuum winding model represents the real-space current density as
+
+```text
+J_vector(rho, phi, z) = J e_phi
+  for r1 <= rho <= r2 and |z| <= h/2,
+J_vector(rho, phi, z) = 0 otherwise,
+
+J = N I / ((r2 - r1) h),
+e_phi = (-sin(phi), cos(phi), 0)^T.
+```
+
+Thus the current is homogeneous throughout the rectangular winding cross
+section and points in the local azimuthal direction. For `q > 0`, the
+magnetostatic Maxwell equations give
 
 ```text
 B_tilde(q) = i mu0 (q cross J_tilde(q)) / q^2.
@@ -113,10 +126,11 @@ R1(q_rho) = q_rho/6
   [rho^3 1F2(3/2; 2, 5/2; -(q_rho rho)^2/4)]_(r1)^(r2).
 ```
 
-Insert these form factors into the energy, use
-`J = N I / ((r2 - r1) h)`, carry out the angular and axial integrations, and
-set `alpha = h q_rho` and `nu_i = r_i/h`. Without displaying the intermediate
-integral algebra, this reduction yields
+Here `1F2(a; b1, b2; x)` denotes the generalized hypergeometric function.
+
+Insert these form factors into the energy, carry out the angular and axial
+integrations, and set `alpha = h q_rho` and `nu_i = r_i/h`. Without displaying
+the intermediate integral algebra, this reduction yields
 
 ```text
 L0 = mu0 pi N^2 h^3 / (18 (r2 - r1)^2) G(r1/h, r2/h),

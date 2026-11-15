@@ -679,7 +679,7 @@ documentation_panel = ui.tags.article(
         ),
         ui.tags.section(
             ui.tags.span("05", class_="docs-number"),
-            ui.h3("Energy route to L₀"),
+            ui.h3("Energy route to the DC inductance"),
             ui.tags.p(
                 "This is a compact derivation template only: it states the "
                 "Fourier convention, substitutions, and endpoints while "
@@ -709,6 +709,15 @@ documentation_panel = ui.tags.article(
             _equation(
                 r"""
                 \begin{aligned}
+                \mathbf J(\rho,\varphi,z)
+                &= \begin{cases}
+                J\,\mathbf e_\varphi,
+                & r_1\leq\rho\leq r_2,\ |z|\leq h/2, \\
+                \mathbf 0, & \text{otherwise},
+                \end{cases} \\
+                J &= \frac{NI}{(r_2-r_1)h}, \\
+                \mathbf e_\varphi
+                &= (-\sin\varphi,\,\cos\varphi,\,0)^{\mathsf T}, \\[0.5em]
                 \widetilde{\mathbf B}(\mathbf q)
                 &= i\mu_0\frac{\mathbf q\times
                 \widetilde{\mathbf J}(\mathbf q)}{q^2},
@@ -728,14 +737,16 @@ documentation_panel = ui.tags.article(
                 \end{aligned}
                 """,
                 (
-                    "Here q² = qρ² + qz² and j₀(x) = sin(x)/x. The q = 0 "
-                    "mode is not used in this Fourier-space relation."
+                    "Here q² = qρ² + qz² and j₀(x) = sin(x)/x. The symbol "
+                    "₁F₂(a; b₁, b₂; x) denotes the generalized hypergeometric "
+                    "function. The q = 0 mode is not used in this "
+                    "Fourier-space relation."
                 ),
             ),
             ui.tags.span("SUBSTITUTE & REDUCE", class_="derivation-step"),
             ui.tags.p(
                 "Insert the field and current-density form factors into the "
-                "energy, use the macroscopic current density below, carry "
+                "energy, use the macroscopic current density above, carry "
                 "out the angular and axial integrations, and introduce the "
                 "dimensionless variables α and ν. This directly reduces the "
                 "problem to the one-dimensional G integral."
@@ -743,7 +754,6 @@ documentation_panel = ui.tags.article(
             _equation(
                 r"""
                 \begin{aligned}
-                J &= \frac{NI}{(r_2-r_1)h}, \\
                 \alpha &= hq_\rho,
                 & \nu_i &= \frac{r_i}{h}, \\
                 L_0 &= \frac{\mu_0\pi N^2h^3}{18(r_2-r_1)^2}
