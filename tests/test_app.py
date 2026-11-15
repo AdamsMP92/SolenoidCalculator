@@ -29,6 +29,9 @@ def test_documentation_uses_latex_without_reference_check() -> None:
     assert r"\frac{\mu_0\pi N^2h^3}" in documentation_html
     assert r"Z_0(\omega)" in documentation_html
     assert "Energy route to the DC inductance" in documentation_html
+    assert "MAXWELL EQUATIONS" in documentation_html
+    assert "CURRENT-DENSITY MODEL" in documentation_html
+    assert r"\nabla\cdot\mathbf B" in documentation_html
     assert r"\begin{cases}" in documentation_html
     assert r"\mathbf q\times" in documentation_html
     assert r"G(\nu_1,\nu_2)" in documentation_html

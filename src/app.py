@@ -681,9 +681,10 @@ documentation_panel = ui.tags.article(
             ui.tags.span("05", class_="docs-number"),
             ui.h3("Energy route to the DC inductance"),
             ui.tags.p(
-                "This is a compact derivation template only: it states the "
-                "Fourier convention, substitutions, and endpoints while "
-                "deliberately omitting the intermediate integral algebra."
+                "This compact derivation template states the Fourier "
+                "convention, Maxwell equations, current-density model, "
+                "substitutions, and endpoint while deliberately omitting "
+                "the intermediate integral algebra."
             ),
             ui.tags.span("ENERGY & PARSEVAL", class_="derivation-step"),
             _equation(
@@ -705,7 +706,30 @@ documentation_panel = ui.tags.article(
                     "reciprocal-space energy expressions identical."
                 ),
             ),
-            ui.tags.span("MAXWELL & SOLENOID FORM FACTOR", class_="derivation-step"),
+            ui.tags.span("MAXWELL EQUATIONS", class_="derivation-step"),
+            _equation(
+                r"""
+                \begin{aligned}
+                \nabla\cdot\mathbf B(\mathbf r) &= 0,
+                & \nabla\times\mathbf B(\mathbf r)
+                &= \mu_0\mathbf J(\mathbf r), \\
+                i\mathbf q\cdot\widetilde{\mathbf B}(\mathbf q) &= 0,
+                & i\mathbf q\times\widetilde{\mathbf B}(\mathbf q)
+                &= \mu_0\widetilde{\mathbf J}(\mathbf q), \\
+                \widetilde{\mathbf B}(\mathbf q)
+                &= i\mu_0\frac{\mathbf q\times
+                \widetilde{\mathbf J}(\mathbf q)}{q^2},
+                \qquad q>0
+                \end{aligned}
+                """,
+                (
+                    "For the nonmagnetic free-space model used here, the "
+                    "Fourier convention above maps ∇ to iq. Here "
+                    "q² = qρ² + qz²; the inverted relation is used only for "
+                    "q > 0."
+                ),
+            ),
+            ui.tags.span("CURRENT-DENSITY MODEL", class_="derivation-step"),
             _equation(
                 r"""
                 \begin{aligned}
@@ -718,10 +742,6 @@ documentation_panel = ui.tags.article(
                 J &= \frac{NI}{(r_2-r_1)h}, \\
                 \mathbf e_\varphi
                 &= (-\sin\varphi,\,\cos\varphi,\,0)^{\mathsf T}, \\[0.5em]
-                \widetilde{\mathbf B}(\mathbf q)
-                &= i\mu_0\frac{\mathbf q\times
-                \widetilde{\mathbf J}(\mathbf q)}{q^2},
-                \qquad q>0, \\
                 \widetilde{\mathbf J}(\mathbf q)
                 &= -\frac{i\,2\pi Jh}{(2\pi)^{3/2}}
                 j_0\!\left(\frac{q_zh}{2}\right)
@@ -737,10 +757,10 @@ documentation_panel = ui.tags.article(
                 \end{aligned}
                 """,
                 (
-                    "Here q² = qρ² + qz² and j₀(x) = sin(x)/x. The symbol "
+                    "The winding is represented by a homogeneous azimuthal "
+                    "volume-current density. Here j₀(x) = sin(x)/x, and "
                     "₁F₂(a; b₁, b₂; x) denotes the generalized hypergeometric "
-                    "function. The q = 0 mode is not used in this "
-                    "Fourier-space relation."
+                    "function."
                 ),
             ),
             ui.tags.span("SUBSTITUTE & REDUCE", class_="derivation-step"),

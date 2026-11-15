@@ -94,7 +94,26 @@ Em = 1/2 L0 I^2
    = 1/(2 mu0) integral_R3 |B_tilde(q)|^2 d^3q.
 ```
 
-The continuum winding model represents the real-space current density as
+For the nonmagnetic free-space model used by the calculator, the differential
+magnetostatic Maxwell equations are
+
+```text
+div B(r)  = 0,
+curl B(r) = mu0 J(r).
+```
+
+With the unitary Fourier convention above, `nabla` maps to `i q`, so that
+
+```text
+i q dot B_tilde(q)   = 0,
+i q cross B_tilde(q) = mu0 J_tilde(q),
+
+B_tilde(q) = i mu0 (q cross J_tilde(q)) / q^2,  q > 0.
+```
+
+The last relation is inverted only for nonzero wave vectors; the `q = 0` mode
+is not used. Separately, the continuum winding model represents the real-space
+current density as
 
 ```text
 J_vector(rho, phi, z) = J e_phi
@@ -106,15 +125,8 @@ e_phi = (-sin(phi), cos(phi), 0)^T.
 ```
 
 Thus the current is homogeneous throughout the rectangular winding cross
-section and points in the local azimuthal direction. For `q > 0`, the
-magnetostatic Maxwell equations give
-
-```text
-B_tilde(q) = i mu0 (q cross J_tilde(q)) / q^2.
-```
-
-The Fourier transform of the homogeneous azimuthal current density separates
-into axial, radial, and angular form factors:
+section and points in the local azimuthal direction. Its Fourier transform
+separates into axial, radial, and angular form factors:
 
 ```text
 J_tilde(q) = -i 2 pi J h / (2 pi)^(3/2)
