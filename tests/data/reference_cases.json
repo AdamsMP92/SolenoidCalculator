@@ -1,0 +1,50 @@
+{
+  "matlab_default": {
+    "inputs": {
+      "wire_radius_mm": 0.5,
+      "coating_thickness_mm": 0.1,
+      "conductivity_s_per_m": 56000000.0,
+      "inner_radius_mm": 11.0,
+      "outer_radius_mm": 18.2,
+      "height_mm": 48.0,
+      "current_a": 1.0,
+      "frequency_hz": 50.0
+    },
+    "expected": {
+      "radial_turns": 6,
+      "axial_turns": 40,
+      "total_turns": 240,
+      "effective_outer_radius_mm": 18.2,
+      "effective_height_mm": 48.0,
+      "wire_length_m": 22.01628131635727,
+      "resistance_ohm": 0.5005714285714286,
+      "inductance_h_ported_baseline": 0.0006534096580775216,
+      "central_flux_density_t": 0.005365073460931817,
+      "impedance_magnitude_ohm": 0.5410262995518419
+    }
+  },
+  "versuch_38_published_example": {
+    "inputs": {
+      "wire_radius_mm": 0.11,
+      "coating_thickness_mm": 0.022,
+      "conductivity_s_per_m": 56000000.0,
+      "inner_radius_mm": 2.5,
+      "outer_radius_mm": 11.6,
+      "height_mm": 10.0,
+      "current_a": 0.01,
+      "frequency_hz": 0.0
+    },
+    "expected": {
+      "radial_turns": 34,
+      "axial_turns": 37,
+      "total_turns": 1258,
+      "effective_outer_radius_mm": 11.476,
+      "effective_height_mm": 9.768,
+      "resistance_ohm_rounded": 25.94,
+      "inductance_h_rounded": 0.01097,
+      "python_resistance_ohm": 25.947178276269188,
+      "python_inductance_h": 0.010973426688985604,
+      "python_central_flux_density_t_at_10_mA": 0.0009669969680944363
+    }
+  }
+}
