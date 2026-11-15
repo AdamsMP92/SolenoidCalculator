@@ -78,8 +78,45 @@ B_z(0) = mu0 N I / (2 (r2 - r1))
 
 ## DC self-inductance L0
 
-Fourier transformation of the azimuthal current density and Parseval's
-identity yield
+Use the unitary Fourier convention
+
+```text
+F_tilde(q) = (2 pi)^(-3/2) integral_R3
+  F(r) exp(-i q dot r) d^3r.
+```
+
+Parseval's identity and the magnetic energy then give the real- and
+reciprocal-space route
+
+```text
+Em = 1/2 L0 I^2
+   = 1/(2 mu0) integral_R3 |B(r)|^2 d^3r
+   = 1/(2 mu0) integral_R3 |B_tilde(q)|^2 d^3q.
+```
+
+For `q > 0`, the magnetostatic Maxwell equations give
+
+```text
+B_tilde(q) = i mu0 (q cross J_tilde(q)) / q^2.
+```
+
+The Fourier transform of the homogeneous azimuthal current density separates
+into axial, radial, and angular form factors:
+
+```text
+J_tilde(q) = -i 2 pi J h / (2 pi)^(3/2)
+  j0(qz h/2) R1(q_rho) e_phi_q,
+
+e_phi_q = (-sin(phi_q), cos(phi_q), 0)^T,
+
+R1(q_rho) = q_rho/6
+  [rho^3 1F2(3/2; 2, 5/2; -(q_rho rho)^2/4)]_(r1)^(r2).
+```
+
+Insert these form factors into the energy, use
+`J = N I / ((r2 - r1) h)`, carry out the angular and axial integrations, and
+set `alpha = h q_rho` and `nu_i = r_i/h`. Without displaying the intermediate
+integral algebra, this reduction yields
 
 ```text
 L0 = mu0 pi N^2 h^3 / (18 (r2 - r1)^2) G(r1/h, r2/h),
@@ -88,9 +125,11 @@ L0 = mu0 pi N^2 h^3 / (18 (r2 - r1)^2) G(r1/h, r2/h),
 where
 
 ```text
+Phi(alpha, nu) = nu^3 1F2(3/2; 2, 5/2; -(alpha nu)^2/4),
+
 G(nu1, nu2) = integral_0^infinity
   (alpha - 1 + exp(-alpha))
-  ([1F2(3/2; 2, 5/2; -(alpha nu)^2/4) nu^3]_(nu1)^(nu2))^2
+  (Phi(alpha, nu2) - Phi(alpha, nu1))^2
   d alpha.
 ```
 

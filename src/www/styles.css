@@ -921,6 +921,7 @@ a {
 
 .docs-section {
   position: relative;
+  min-width: 0;
   padding: 25px;
   border-radius: var(--radius-lg);
 }
@@ -947,7 +948,29 @@ a {
   line-height: 1.65;
 }
 
+.docs-section-wide {
+  grid-column: 1 / -1;
+}
+
+.derivation-section > p {
+  max-width: 920px;
+}
+
+.derivation-step {
+  display: block;
+  margin-top: 22px;
+  color: var(--teal);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+}
+
+.derivation-section .equation-card {
+  margin-top: 8px;
+}
+
 .equation-card {
+  max-width: 100%;
   overflow-x: auto;
   margin-top: 18px;
   padding: 16px;

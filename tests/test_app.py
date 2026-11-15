@@ -28,6 +28,10 @@ def test_documentation_uses_latex_without_reference_check() -> None:
     documentation_html = str(documentation_panel)
     assert r"\frac{\mu_0\pi N^2h^3}" in documentation_html
     assert r"Z_0(\omega)" in documentation_html
+    assert "Energy route to L₀" in documentation_html
+    assert r"\mathbf q\times" in documentation_html
+    assert r"G(\nu_1,\nu_2)" in documentation_html
+    assert r"q&gt;0" in documentation_html or r"q>0" in documentation_html
     assert "REFERENCE CHECK" not in documentation_html
     assert "Versuch 38" not in documentation_html
 

@@ -677,6 +677,96 @@ documentation_panel = ui.tags.article(
             ),
             class_="docs-section",
         ),
+        ui.tags.section(
+            ui.tags.span("05", class_="docs-number"),
+            ui.h3("Energy route to L₀"),
+            ui.tags.p(
+                "This is a compact derivation template only: it states the "
+                "Fourier convention, substitutions, and endpoints while "
+                "deliberately omitting the intermediate integral algebra."
+            ),
+            ui.tags.span("ENERGY & PARSEVAL", class_="derivation-step"),
+            _equation(
+                r"""
+                \begin{aligned}
+                \widetilde{\mathbf F}(\mathbf q)
+                &= \frac{1}{(2\pi)^{3/2}}
+                \int_{\mathbb R^3}\mathbf F(\mathbf r)
+                e^{-i\mathbf q\cdot\mathbf r}\,d^3r, \\
+                E_m = \frac{1}{2}L_0I^2
+                &= \frac{1}{2\mu_0}\int_{\mathbb R^3}
+                |\mathbf B(\mathbf r)|^2\,d^3r
+                = \frac{1}{2\mu_0}\int_{\mathbb R^3}
+                |\widetilde{\mathbf B}(\mathbf q)|^2\,d^3q
+                \end{aligned}
+                """,
+                (
+                    "The unitary Fourier convention makes the real- and "
+                    "reciprocal-space energy expressions identical."
+                ),
+            ),
+            ui.tags.span("MAXWELL & SOLENOID FORM FACTOR", class_="derivation-step"),
+            _equation(
+                r"""
+                \begin{aligned}
+                \widetilde{\mathbf B}(\mathbf q)
+                &= i\mu_0\frac{\mathbf q\times
+                \widetilde{\mathbf J}(\mathbf q)}{q^2},
+                \qquad q>0, \\
+                \widetilde{\mathbf J}(\mathbf q)
+                &= -\frac{i\,2\pi Jh}{(2\pi)^{3/2}}
+                j_0\!\left(\frac{q_zh}{2}\right)
+                \mathcal R_1(q_\rho)\,\mathbf e_{\varphi_q}, \\
+                \mathbf e_{\varphi_q}
+                &= (-\sin\varphi_q,\,\cos\varphi_q,\,0)^{\mathsf T}, \\
+                \mathcal R_1(q_\rho)
+                &= \frac{q_\rho}{6}\left[
+                \rho^3\,{}_1F_2\!\left(
+                \frac{3}{2};2,\frac{5}{2};
+                -\frac{(q_\rho\rho)^2}{4}
+                \right)\right]_{r_1}^{r_2}
+                \end{aligned}
+                """,
+                (
+                    "Here q² = qρ² + qz² and j₀(x) = sin(x)/x. The q = 0 "
+                    "mode is not used in this Fourier-space relation."
+                ),
+            ),
+            ui.tags.span("SUBSTITUTE & REDUCE", class_="derivation-step"),
+            ui.tags.p(
+                "Insert the field and current-density form factors into the "
+                "energy, use the macroscopic current density below, carry "
+                "out the angular and axial integrations, and introduce the "
+                "dimensionless variables α and ν. This directly reduces the "
+                "problem to the one-dimensional G integral."
+            ),
+            _equation(
+                r"""
+                \begin{aligned}
+                J &= \frac{NI}{(r_2-r_1)h}, \\
+                \alpha &= hq_\rho,
+                & \nu_i &= \frac{r_i}{h}, \\
+                L_0 &= \frac{\mu_0\pi N^2h^3}{18(r_2-r_1)^2}
+                G(\nu_1,\nu_2), \\
+                \Phi(\alpha,\nu)
+                &= \nu^3\,{}_1F_2\!\left(
+                \frac{3}{2};2,\frac{5}{2};
+                -\frac{(\alpha\nu)^2}{4}
+                \right), \\
+                G(\nu_1,\nu_2)
+                &= \int_0^\infty (\alpha-1+e^{-\alpha}) \\
+                &\quad{}\times
+                \left[\Phi(\alpha,\nu_2)-
+                \Phi(\alpha,\nu_1)\right]^2\,d\alpha
+                \end{aligned}
+                """,
+                (
+                    "The calculator evaluates G numerically and reports its "
+                    "tail-convergence diagnostics."
+                ),
+            ),
+            class_="docs-section docs-section-wide derivation-section",
+        ),
         class_="docs-grid",
     ),
     ui.div(
