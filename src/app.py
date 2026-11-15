@@ -98,78 +98,159 @@ def _status_item(label: str, value: str) -> ui.Tag:
 
 def _geometry_diagram(result: SolenoidResult) -> str:
     geometry = result.geometry
-    requested_span = geometry.requested_outer_radius_m - geometry.inner_radius_m
-    radial_fraction = geometry.radial_span_m / requested_span
-    axial_fraction = geometry.effective_height_m / geometry.requested_height_m
+    millimetres = 1.0e3
+    inner_radius = geometry.inner_radius_m * millimetres
+    requested_outer_radius = geometry.requested_outer_radius_m * millimetres
+    effective_outer_radius = geometry.effective_outer_radius_m * millimetres
+    requested_height = geometry.requested_height_m * millimetres
+    effective_height = geometry.effective_height_m * millimetres
+    pitch = geometry.wire_pitch_m * millimetres
+    conductor_radius = result.inputs.wire_radius_m * millimetres
+    insulated_radius = (
+        result.inputs.wire_radius_m + result.inputs.coating_thickness_m
+    ) * millimetres
 
-    envelope_x = 92.0
-    envelope_y = 34.0
-    envelope_width = 360.0
-    envelope_height = 188.0
-    effective_width = envelope_width * radial_fraction
-    effective_height = envelope_height * axial_fraction
-    effective_y = envelope_y + 0.5 * (envelope_height - effective_height)
-
-    visible_radial = min(geometry.radial_turns, 12)
-    visible_axial = min(geometry.axial_turns, 18)
-    radius = min(
-        7.0,
-        0.36 * effective_width / max(visible_radial, 1),
-        0.36 * effective_height / max(visible_axial, 1),
+    axis_x = 220.0
+    centre_y = 162.0
+    available_width = 290.0
+    available_height = 220.0
+    scale = min(
+        available_width / (2.0 * requested_outer_radius),
+        available_height / requested_height,
     )
-    circles: list[str] = []
-    for radial_index in range(visible_radial):
-        x = envelope_x + (radial_index + 0.5) * effective_width / visible_radial
-        for axial_index in range(visible_axial):
-            y = effective_y + (axial_index + 0.5) * effective_height / visible_axial
-            circles.append(
-                f'<circle cx="{x:.2f}" cy="{y:.2f}" r="{radius:.2f}" '
-                'fill="#d68a42" stroke="#9a4f20" stroke-width="1.2"/>'
-            )
 
-    sampling_note = ""
-    if visible_radial != geometry.radial_turns or visible_axial != geometry.axial_turns:
-        sampling_note = " · representative turns shown"
+    requested_span_width = (requested_outer_radius - inner_radius) * scale
+    occupied_span_width = (effective_outer_radius - inner_radius) * scale
+    requested_height_px = requested_height * scale
+    effective_height_px = effective_height * scale
+    pitch_px = pitch * scale
+    conductor_radius_px = conductor_radius * scale
+    insulated_radius_px = insulated_radius * scale
+
+    requested_y = centre_y - 0.5 * requested_height_px
+    occupied_y = centre_y - 0.5 * effective_height_px
+    left_requested_x = axis_x - requested_outer_radius * scale
+    right_requested_x = axis_x + inner_radius * scale
+    left_occupied_x = axis_x - effective_outer_radius * scale
+    right_occupied_x = axis_x + inner_radius * scale
+    axis_top = max(34.0, requested_y - 18.0)
+    axis_bottom = min(286.0, requested_y + requested_height_px + 18.0)
+    radial_axis_y = min(298.0, requested_y + requested_height_px + 19.0)
+    right_outer_x = axis_x + requested_outer_radius * scale
 
     return f"""
-    <svg class="coil-svg" viewBox="0 0 520 280" role="img"
-         aria-label="Schematic cross-section of the calculated winding">
+    <svg class="coil-svg" viewBox="0 0 440 360" role="img"
+         aria-labelledby="winding-title winding-description">
+      <title id="winding-title">Symmetric solenoid winding cross-section</title>
+      <desc id="winding-description">
+        Equal-scale r-z cross-section through both sides of the annular
+        winding. Every pattern cell represents one insulated conductor
+        cross-section.
+      </desc>
       <defs>
         <linearGradient id="coilFill" x1="0" x2="1">
           <stop offset="0%" stop-color="#d9eff0" stop-opacity="0.85"/>
           <stop offset="100%" stop-color="#eef4ff" stop-opacity="0.9"/>
         </linearGradient>
+        <marker id="coordinateArrow" markerWidth="7" markerHeight="7"
+                refX="5.5" refY="3.5" orient="auto">
+          <path d="M0,0 L7,3.5 L0,7 Z" fill="#667085"/>
+        </marker>
+        <pattern id="leftTurnPattern" x="{left_occupied_x:.4f}"
+                 y="{occupied_y:.4f}" width="{pitch_px:.4f}"
+                 height="{pitch_px:.4f}" patternUnits="userSpaceOnUse"
+                 viewBox="0 0 {pitch_px:.4f} {pitch_px:.4f}">
+          <circle cx="{0.5 * pitch_px:.4f}" cy="{0.5 * pitch_px:.4f}"
+                  r="{insulated_radius_px:.4f}" class="turn-insulation"/>
+          <circle cx="{0.5 * pitch_px:.4f}" cy="{0.5 * pitch_px:.4f}"
+                  r="{conductor_radius_px:.4f}" class="turn-copper"/>
+        </pattern>
+        <pattern id="rightTurnPattern" x="{right_occupied_x:.4f}"
+                 y="{occupied_y:.4f}" width="{pitch_px:.4f}"
+                 height="{pitch_px:.4f}" patternUnits="userSpaceOnUse"
+                 viewBox="0 0 {pitch_px:.4f} {pitch_px:.4f}">
+          <circle cx="{0.5 * pitch_px:.4f}" cy="{0.5 * pitch_px:.4f}"
+                  r="{insulated_radius_px:.4f}" class="turn-insulation"/>
+          <circle cx="{0.5 * pitch_px:.4f}" cy="{0.5 * pitch_px:.4f}"
+                  r="{conductor_radius_px:.4f}" class="turn-copper"/>
+        </pattern>
       </defs>
-      <text x="18" y="23" class="svg-axis-label">coil axis</text>
-      <line x1="24" y1="128" x2="72" y2="128"
-            stroke="#667085" stroke-width="2"/>
-      <path d="M65 122 L73 128 L65 134" fill="none"
-            stroke="#667085" stroke-width="2"/>
-      <line x1="{envelope_x:.1f}" y1="24" x2="{envelope_x:.1f}" y2="234"
-            stroke="#172033" stroke-width="5"/>
-      <rect x="{envelope_x:.1f}" y="{envelope_y:.1f}"
-            width="{envelope_width:.1f}" height="{envelope_height:.1f}"
-            rx="8" fill="none" stroke="#9ca9ba" stroke-width="2"
-            stroke-dasharray="7 6"/>
-      <rect x="{envelope_x:.1f}" y="{effective_y:.1f}"
-            width="{effective_width:.1f}" height="{effective_height:.1f}"
-            rx="7" fill="url(#coilFill)" stroke="#136f7a" stroke-width="2.5"/>
-      {"".join(circles)}
-      <text x="{envelope_x + envelope_width / 2:.1f}" y="258"
-            text-anchor="middle" class="svg-caption">
-        {geometry.radial_turns} radial × {geometry.axial_turns} axial turns
-        {sampling_note}
-      </text>
-      <g transform="translate(338,16)">
+
+      <text x="18" y="20" class="svg-kicker">r–z cross-section · equal scale</text>
+      <g transform="translate(263,16)">
         <line x1="0" y1="0" x2="24" y2="0" stroke="#9ca9ba"
               stroke-width="2" stroke-dasharray="6 5"/>
         <text x="31" y="4" class="svg-legend">requested envelope</text>
       </g>
-      <g transform="translate(338,34)">
+      <g transform="translate(263,34)">
         <line x1="0" y1="0" x2="24" y2="0" stroke="#136f7a"
               stroke-width="3"/>
         <text x="31" y="4" class="svg-legend">occupied winding</text>
       </g>
+
+      <line id="coil-axis" x1="{axis_x:.2f}" y1="{axis_bottom:.2f}"
+            x2="{axis_x:.2f}" y2="{axis_top:.2f}" class="coil-axis-line"
+            marker-end="url(#coordinateArrow)"/>
+      <text x="{axis_x + 9:.2f}" y="{axis_top + 4:.2f}"
+            class="svg-axis-label">z</text>
+
+      <g id="winding-left">
+        <rect x="{left_occupied_x:.4f}" y="{occupied_y:.4f}"
+              width="{occupied_span_width:.4f}" height="{effective_height_px:.4f}"
+              fill="url(#coilFill)" class="coil-pack-background"/>
+        <rect x="{left_occupied_x:.4f}" y="{occupied_y:.4f}"
+              width="{occupied_span_width:.4f}" height="{effective_height_px:.4f}"
+              fill="url(#leftTurnPattern)"/>
+        <rect id="left-occupied" x="{left_occupied_x:.4f}"
+              y="{occupied_y:.4f}" width="{occupied_span_width:.4f}"
+              height="{effective_height_px:.4f}" class="coil-occupied-outline"/>
+        <rect id="left-requested" x="{left_requested_x:.4f}"
+              y="{requested_y:.4f}" width="{requested_span_width:.4f}"
+              height="{requested_height_px:.4f}" class="coil-envelope"/>
+      </g>
+
+      <g id="winding-right">
+        <rect x="{right_occupied_x:.4f}" y="{occupied_y:.4f}"
+              width="{occupied_span_width:.4f}" height="{effective_height_px:.4f}"
+              fill="url(#coilFill)" class="coil-pack-background"/>
+        <rect x="{right_occupied_x:.4f}" y="{occupied_y:.4f}"
+              width="{occupied_span_width:.4f}" height="{effective_height_px:.4f}"
+              fill="url(#rightTurnPattern)"/>
+        <rect id="right-occupied" x="{right_occupied_x:.4f}"
+              y="{occupied_y:.4f}" width="{occupied_span_width:.4f}"
+              height="{effective_height_px:.4f}" class="coil-occupied-outline"/>
+        <rect id="right-requested" x="{right_requested_x:.4f}"
+              y="{requested_y:.4f}" width="{requested_span_width:.4f}"
+              height="{requested_height_px:.4f}" class="coil-envelope"/>
+      </g>
+
+      <text x="{axis_x:.2f}" y="{centre_y + 4.0:.2f}"
+            text-anchor="middle" class="svg-bore-label">bore</text>
+      <line x1="{axis_x:.2f}" y1="{radial_axis_y:.2f}"
+            x2="{right_outer_x + 8.0:.2f}" y2="{radial_axis_y:.2f}"
+            class="coil-coordinate-line" marker-end="url(#coordinateArrow)"/>
+      <text x="{right_outer_x + 14.0:.2f}" y="{radial_axis_y + 4.0:.2f}"
+            class="svg-axis-label">ρ</text>
+      <text x="{axis_x:.2f}" y="{radial_axis_y + 17.0:.2f}"
+            text-anchor="middle" class="svg-axis-origin">ρ = 0</text>
+
+      <g transform="translate(20,309)">
+        <circle cx="6" cy="6" r="5.5" class="turn-insulation"/>
+        <circle cx="6" cy="6" r="4" class="turn-copper"/>
+        <text x="17" y="10" class="svg-legend">copper + coating</text>
+      </g>
+      <text x="420" y="319" text-anchor="end" class="svg-legend">
+        pitch p = {pitch:.4g} mm in ρ and z
+      </text>
+      <text x="{axis_x:.2f}" y="338" text-anchor="middle" class="svg-caption">
+        <tspan x="{axis_x:.2f}">
+          {geometry.total_turns:,} turns · {geometry.radial_turns} radial ×
+          {geometry.axial_turns} axial packing
+        </tspan>
+        <tspan x="{axis_x:.2f}" dy="14">
+          each turn intersects the section on both sides · equal geometric scale
+        </tspan>
+      </text>
     </svg>
     """
 

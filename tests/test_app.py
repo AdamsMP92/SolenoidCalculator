@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import xml.etree.ElementTree as ET
+
+import pytest
 from shiny import App
 
 from app import PRESETS, _field_profile_chart, _geometry_diagram, app
@@ -15,9 +18,45 @@ def test_geometry_diagram_contains_winding_counts(
     paper_result: SolenoidResult,
 ) -> None:
     diagram = _geometry_diagram(paper_result)
-    assert "34 radial × 37 axial turns" in diagram
+    assert "1,258 turns · 34 radial ×" in diagram
+    assert "37 axial packing" in diagram
     assert "requested envelope" in diagram
     assert "occupied winding" in diagram
+
+
+def test_geometry_diagram_is_symmetric_and_uses_one_physical_scale(
+    matlab_default_result: SolenoidResult,
+) -> None:
+    diagram = _geometry_diagram(matlab_default_result)
+    root = ET.fromstring(diagram.strip())
+    elements = {
+        element.attrib["id"]: element
+        for element in root.iter()
+        if "id" in element.attrib
+    }
+
+    axis = elements["coil-axis"]
+    left = elements["left-occupied"]
+    right = elements["right-occupied"]
+    pattern = elements["rightTurnPattern"]
+    axis_x = float(axis.attrib["x1"])
+    left_x = float(left.attrib["x"])
+    right_x = float(right.attrib["x"])
+    width = float(right.attrib["width"])
+    height = float(right.attrib["height"])
+
+    assert float(axis.attrib["x2"]) == pytest.approx(axis_x)
+    assert float(left.attrib["width"]) == pytest.approx(width)
+    assert left_x + width + right_x == pytest.approx(2.0 * axis_x)
+
+    radial_pitch = width / matlab_default_result.geometry.radial_turns
+    axial_pitch = height / matlab_default_result.geometry.axial_turns
+    assert radial_pitch == pytest.approx(axial_pitch, rel=1.0e-4)
+    assert float(pattern.attrib["width"]) == pytest.approx(radial_pitch, rel=1.0e-4)
+    assert float(pattern.attrib["height"]) == pytest.approx(
+        axial_pitch,
+        rel=1.0e-4,
+    )
 
 
 def test_field_profile_chart_contains_accessible_svg(
