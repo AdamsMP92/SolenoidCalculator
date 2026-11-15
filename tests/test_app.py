@@ -5,13 +5,31 @@ import xml.etree.ElementTree as ET
 import pytest
 from shiny import App
 
-from app import PRESETS, _field_profile_chart, _geometry_diagram, app
+from app import (
+    PRESETS,
+    _field_profile_chart,
+    _geometry_diagram,
+    app,
+    documentation_panel,
+    input_panel,
+)
 from solenoid_calculator.models import SolenoidResult
 
 
 def test_shiny_app_constructs() -> None:
     assert isinstance(app, App)
-    assert {"matlab", "versuch38"} <= PRESETS.keys()
+    assert set(PRESETS) == {"default1", "default2"}
+    input_html = str(input_panel)
+    assert "Default 1" in input_html
+    assert "Default 2" in input_html
+
+
+def test_documentation_uses_latex_without_reference_check() -> None:
+    documentation_html = str(documentation_panel)
+    assert r"\frac{\mu_0\pi N^2h^3}" in documentation_html
+    assert r"Z_0(\omega)" in documentation_html
+    assert "REFERENCE CHECK" not in documentation_html
+    assert "Versuch 38" not in documentation_html
 
 
 def test_geometry_diagram_contains_winding_counts(

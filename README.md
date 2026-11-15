@@ -1,8 +1,8 @@
 # Solenoid Calculator
 
-A tested Python implementation for estimating the winding geometry, DC
-resistance, DC inductance, ideal series impedance, and axial magnetic flux
-density of a thick cylindrical solenoid.
+A tested Python implementation for estimating the winding geometry, DC ohmic
+resistance `R0`, DC inductance `L0`, ideal series impedance `Z0`, and axial
+magnetic flux density of a thick cylindrical solenoid.
 
 The numerical model is based on a homogeneous azimuthal current density in
 the rectangular coil cross-section and a simple-cubic winding model. The
@@ -68,5 +68,6 @@ deploys pushes to `main` to GitHub Pages:
 ## Scope
 
 The impedance is currently the ideal low-frequency series model
-`Z = R + i 2 pi f L`. Skin effect, proximity effect, parasitic capacitance,
-lead resistance, and magnetic materials are outside the present model.
+`Z0 = R0 + j omega L0`, with `omega = 2 pi f`. Skin effect, proximity effect,
+parasitic capacitance, lead resistance, and magnetic materials are outside the
+present model.

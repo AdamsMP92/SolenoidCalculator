@@ -18,7 +18,7 @@ from solenoid_calculator import (
 APP_DIR = Path(__file__).parent
 
 PRESETS = {
-    "matlab": {
+    "default1": {
         "wire_radius": 0.5,
         "coating_thickness": 0.1,
         "conductivity": 56.0,
@@ -28,7 +28,7 @@ PRESETS = {
         "current": 1.0,
         "frequency": 50.0,
     },
-    "versuch38": {
+    "default2": {
         "wire_radius": 0.11,
         "coating_thickness": 0.022,
         "conductivity": 56.0,
@@ -385,9 +385,12 @@ def _field_profile_chart(result: SolenoidResult) -> str:
     """
 
 
-def _equation(content: str, caption: str) -> ui.Tag:
+def _equation(latex: str, caption: str) -> ui.Tag:
     return ui.div(
-        ui.HTML(content),
+        ui.div(
+            ui.HTML("\\[" + latex + "\\]"),
+            class_="latex-display",
+        ),
         ui.tags.p(caption),
         class_="equation-card",
     )
@@ -398,7 +401,7 @@ input_panel = ui.div(
         ui.tags.span("INPUTS", class_="eyebrow"),
         ui.h2("Define the coil"),
         ui.tags.p(
-            "Choose a reference setup or enter your own dimensions.",
+            "Choose a default setup or enter your own dimensions.",
             class_="panel-intro",
         ),
         class_="panel-heading",
@@ -408,13 +411,13 @@ input_panel = ui.div(
             "preset",
             "Load a preset",
             {
-                "matlab": "MATLAB app defaults",
-                "versuch38": "Versuch 38 reference",
+                "default1": "Default 1",
+                "default2": "Default 2",
             },
-            selected="matlab",
+            selected="default1",
         ),
         ui.tags.small(
-            "Presets update the fields below. Press calculate to apply.",
+            "Defaults update the fields below. Press calculate to apply.",
             class_="field-note",
         ),
         class_="preset-block",
@@ -503,7 +506,7 @@ input_panel = ui.div(
             50.0,
             minimum=0.0,
             step=1.0,
-            note="Used for ideal R–L impedance",
+            note="Used for the ideal Z₀ series impedance",
         ),
         class_="input-pair",
     ),
@@ -563,7 +566,7 @@ calculator_panel = ui.div(
                 ui.tags.span("MODEL BOUNDARY", class_="eyebrow"),
                 ui.h3("What this result means"),
                 ui.tags.p(
-                    "The impedance is the ideal low-frequency series model. "
+                    "The impedance follows Z₀ = R₀ + jωL₀ with ω = 2πf. "
                     "Skin effect, proximity effect, parasitic capacitance, "
                     "leads, and magnetic materials are not included."
                 ),
@@ -603,13 +606,15 @@ documentation_panel = ui.tags.article(
                 "fitted inside the requested envelope."
             ),
             _equation(
-                (
-                    "<strong>N<sub>ρ</sub></strong> = "
-                    "⌊(r<sub>2</sub> − r<sub>1</sub>) / 2(r + c)⌋"
-                    "<br><strong>N<sub>z</sub></strong> = "
-                    "⌊h / 2(r + c)⌋"
-                ),
-                "The total winding number is N = Nρ Nz.",
+                r"""
+                \begin{aligned}
+                p &= 2(r+c), \\
+                N_{\rho} &= \left\lfloor \frac{r_2-r_1}{p} \right\rfloor,
+                & N_z &= \left\lfloor \frac{h}{p} \right\rfloor, \\
+                N &= N_{\rho}N_z
+                \end{aligned}
+                """,
+                "Only complete turns inside the requested envelope are retained.",
             ),
             class_="docs-section",
         ),
@@ -622,8 +627,10 @@ documentation_panel = ui.tags.article(
                 "cross-section."
             ),
             _equation(
-                ("<strong>J</strong> = N I / [(r<sub>2</sub> − r<sub>1</sub>) h]"),
-                "J is a volume-current density measured in A/m².",
+                r"""
+                J_{\varphi} = \frac{NI}{(r_2-r_1)h}
+                """,
+                "The azimuthal volume-current density Jφ is measured in A/m².",
             ),
             class_="docs-section",
         ),
@@ -636,19 +643,20 @@ documentation_panel = ui.tags.article(
                 "independent closed expression below."
             ),
             _equation(
-                (
-                    "<strong>B<sub>z</sub>(0)</strong> = "
-                    "μ<sub>0</sub> N I / [2(r<sub>2</sub> − r<sub>1</sub>)] "
-                    "ln[(2r<sub>2</sub> + √(h² + 4r<sub>2</sub>²)) / "
-                    "(2r<sub>1</sub> + √(h² + 4r<sub>1</sub>²))]"
-                ),
+                r"""
+                B_z(0) = \frac{\mu_0NI}{2(r_2-r_1)}
+                \ln\!\left(
+                \frac{2r_2+\sqrt{h^2+4r_2^2}}
+                     {2r_1+\sqrt{h^2+4r_1^2}}
+                \right)
+                """,
                 "No H-field decomposition is required for this calculation.",
             ),
             class_="docs-section",
         ),
         ui.tags.section(
             ui.tags.span("04", class_="docs-number"),
-            ui.h3("Inductance and resistance"),
+            ui.h3("DC inductance and ohmic resistance"),
             ui.tags.p(
                 "The DC self-inductance follows from the magnetostatic energy "
                 "in Fourier space. The remaining improper integral is "
@@ -656,58 +664,36 @@ documentation_panel = ui.tags.article(
                 "diagnostics."
             ),
             _equation(
-                (
-                    "<strong>L</strong> = μ<sub>0</sub> π N² h³ / "
-                    "[18(r<sub>2</sub> − r<sub>1</sub>)²] "
-                    "G(r<sub>1</sub>/h, r<sub>2</sub>/h)"
-                    "<br><strong>R<sub>0</sub></strong> = ℓ / (κ π r²)"
-                ),
-                "The displayed AC impedance is Z = R₀ + i 2πfL.",
+                r"""
+                \begin{aligned}
+                L_0 &= \frac{\mu_0\pi N^2h^3}{18(r_2-r_1)^2}
+                G\!\left(\frac{r_1}{h},\frac{r_2}{h}\right), \\
+                R_0 &= \frac{\ell}{\kappa\pi r^2}, \\
+                Z_0(\omega) &= R_0 + \mathrm{j}\omega L_0,
+                & \omega &= 2\pi f
+                \end{aligned}
+                """,
+                "Z₀ is the ideal low-frequency series impedance.",
             ),
             class_="docs-section",
         ),
         class_="docs-grid",
     ),
     ui.div(
-        ui.div(
-            ui.tags.span("REFERENCE CHECK", class_="eyebrow"),
-            ui.h3("Versuch 38"),
-            ui.tags.p(
-                "The published example specifies 1,258 turns and reports "
-                "R₀ = 25.94 Ω and L = 10.97 mH."
-            ),
-            ui.div(
-                ui.div(
-                    ui.tags.span("Python"),
-                    ui.tags.strong("25.947178 Ω"),
-                    ui.tags.small("DC resistance"),
-                ),
-                ui.div(
-                    ui.tags.span("Python"),
-                    ui.tags.strong("10.973427 mH"),
-                    ui.tags.small("DC inductance"),
-                ),
-                class_="reference-values",
-            ),
-            class_="reference-card",
+        ui.tags.span("OPEN SOURCE", class_="eyebrow"),
+        ui.h3("Inspect the implementation"),
+        ui.tags.p(
+            "The equations, numerical choices, tests, and verification "
+            "cases are documented alongside the source code."
         ),
-        ui.div(
-            ui.tags.span("OPEN SOURCE", class_="eyebrow"),
-            ui.h3("Inspect the implementation"),
-            ui.tags.p(
-                "The equations, numerical choices, tests, and reference "
-                "values are documented alongside the source code."
-            ),
-            ui.tags.a(
-                "View the GitHub repository",
-                href="https://github.com/AdamsMP92/SolenoidCalculator",
-                target="_blank",
-                rel="noopener noreferrer",
-                class_="docs-link",
-            ),
-            class_="source-card",
+        ui.tags.a(
+            "View the GitHub repository",
+            href="https://github.com/AdamsMP92/SolenoidCalculator",
+            target="_blank",
+            rel="noopener noreferrer",
+            class_="docs-link",
         ),
-        class_="docs-footer-grid",
+        class_="source-card docs-source-card",
     ),
     class_="documentation-panel",
 )
@@ -738,6 +724,11 @@ app_ui = ui.page_bootstrap(
                 "family=DM+Sans:wght@400;500;600;700&"
                 "family=Newsreader:opsz,wght@6..72,600&display=swap"
             ),
+        ),
+        ui.tags.script(
+            id="MathJax-script",
+            src="https://cdn.jsdelivr.net/npm/mathjax@4.1.3/tex-chtml.js",
+            defer=True,
         ),
     ),
     ui.include_css(APP_DIR / "www" / "styles.css"),
@@ -914,23 +905,23 @@ def server(input: Inputs, output: Outputs, session: Session) -> None:
                 accent="indigo",
             ),
             _metric_card(
-                "DC inductance",
+                "DC inductance L₀",
                 f"{result.inductance_h * 1.0e3:.6g}",
                 "mH",
                 "Magnetostatic energy model",
             ),
             _metric_card(
-                "DC resistance",
+                "DC ohmic resistance R₀",
                 f"{result.resistance_ohm:.6g}",
                 "Ω",
                 f"{result.wire_length_m:.4g} m estimated wire",
                 accent="copper",
             ),
             _metric_card(
-                "Impedance magnitude",
+                "Impedance magnitude |Z₀|",
                 f"{result.impedance_magnitude_ohm:.6g}",
                 "Ω",
-                f"ideal series model at {result.inputs.frequency_hz:g} Hz",
+                (f"Z₀ = R₀ + jωL₀ · f = {result.inputs.frequency_hz:g} Hz"),
                 accent="indigo",
             ),
             _metric_card(

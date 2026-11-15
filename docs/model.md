@@ -76,13 +76,13 @@ B_z(0) = mu0 N I / (2 (r2 - r1))
              / (2 r1 + sqrt(h^2 + 4 r1^2))).
 ```
 
-## DC self-inductance
+## DC self-inductance L0
 
 Fourier transformation of the azimuthal current density and Parseval's
 identity yield
 
 ```text
-L = mu0 pi N^2 h^3 / (18 (r2 - r1)^2) G(r1/h, r2/h),
+L0 = mu0 pi N^2 h^3 / (18 (r2 - r1)^2) G(r1/h, r2/h),
 ```
 
 where
@@ -99,7 +99,7 @@ difference through an equivalent Bessel integral. The improper integral is
 accumulated in finite tail segments and returns explicit convergence
 diagnostics.
 
-## Wire length and DC resistance
+## Wire length and DC ohmic resistance R0
 
 For the simple-cubic winding model,
 
@@ -111,5 +111,5 @@ R0     = length / (conductivity pi r^2).
 The optional frequency is used only for the ideal series impedance
 
 ```text
-Z0 = R0 + i 2 pi f L.
+Z0 = R0 + j omega L0,  omega = 2 pi f.
 ```
