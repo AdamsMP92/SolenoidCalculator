@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software in research, please cite the version you used."
+type: software
+title: "Solenoid Calculator"
+version: 0.1.0
+date-released: 2026-11-16
+authors:
+  - family-names: Adams
+    given-names: Michael P.
+    orcid: "https://orcid.org/0000-0001-9269-8087"
+abstract: >-
+  Solenoid Calculator is a tested Python implementation for estimating winding
+  geometry, DC ohmic resistance, DC inductance, ideal series impedance, and
+  axial magnetic flux density for thick cylindrical air-core solenoids. It
+  includes documented reference cases and a browser-native interface based on
+  a homogeneous azimuthal current-density model.
+keywords:
+  - solenoids
+  - electromagnetic coils
+  - magnetostatics
+  - inductance
+  - magnetic flux density
+  - scientific software
+license: MIT
+repository-code: "https://github.com/AdamsMP92/SolenoidCalculator"
+url: "https://adamsmp92.github.io/SolenoidCalculator/"
