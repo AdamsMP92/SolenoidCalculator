@@ -1,8 +1,8 @@
 # Scientific model
 
-This document is the repository-native basis for the future online
-documentation. It summarizes the 2023 *Versuch 38* derivation and the model
-implemented by the legacy MATLAB app.
+This document is the repository-native basis for the online documentation.
+It summarizes the 2023 *Versuch 38* derivation and the model implemented by
+the legacy MATLAB app.
 
 ## Scope and assumptions
 

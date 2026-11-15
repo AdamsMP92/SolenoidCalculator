@@ -6,7 +6,7 @@ density of a thick cylindrical solenoid.
 
 The numerical model is based on a homogeneous azimuthal current density in
 the rectangular coil cross-section and a simple-cubic winding model. The
-calculation core is deliberately independent of the future web interface.
+calculation core is deliberately separated from the web interface.
 
 ## Development
 
@@ -17,6 +17,19 @@ pixi install
 pixi run test
 pixi run lint
 pixi run typecheck
+```
+
+Run the local web interface with:
+
+```bash
+pixi run app
+```
+
+Then open `http://127.0.0.1:8000`. To create the static Shinylive bundle
+used by GitHub Pages:
+
+```bash
+pixi run export-site
 ```
 
 A minimal API example:
@@ -43,6 +56,14 @@ print(result.inductance_h, result.resistance_ohm)
 - [Scientific model](docs/model.md)
 - [Reference cases](docs/reference-cases.md)
 - [Implementation decisions](docs/implementation-notes.md)
+
+## Web deployment
+
+The public interface is exported with Shinylive, so the same Python
+calculation core runs locally in each visitor's browser. GitHub Actions
+deploys pushes to `main` to GitHub Pages:
+
+<https://adamsmp92.github.io/SolenoidCalculator/>
 
 ## Scope
 

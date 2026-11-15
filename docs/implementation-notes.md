@@ -31,5 +31,7 @@ F(alpha; nu1, nu2) = 6 / alpha^3
   (A(alpha nu2) - A(alpha nu1)).
 ```
 
-A power series is used around zero to avoid cancellation; elsewhere SciPy's
-Bessel integral implementation is used.
+A power series is used around zero to avoid cancellation. Elsewhere the
+primitive is evaluated with Bessel and Struve functions. This representation
+is stable both in native SciPy and in the WebAssembly SciPy build used by
+Shinylive.

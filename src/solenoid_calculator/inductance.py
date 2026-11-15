@@ -34,7 +34,12 @@ def _integral_u_j1(u: float) -> float:
                 break
         return total
 
-    integral_j0, _ = special.itj0y0(u)
+    integral_j0 = (
+        0.5
+        * math.pi
+        * u
+        * (special.j0(u) * special.struve(-1, u) + special.j1(u) * special.struve(0, u))
+    )
     return float(integral_j0 - u * special.j0(u))
 
 

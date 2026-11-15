@@ -15,6 +15,12 @@ dependencies = [
   "scipy>=1.14,<2",
 ]
 
+[project.optional-dependencies]
+web = [
+  "shiny>=1.8,<2",
+  "shinylive==0.8.12",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/solenoid_calculator"]
 
@@ -34,3 +40,4 @@ python_version = "3.12"
 files = ["src"]
 strict = true
 ignore_missing_imports = true
+exclude = ["src/app.py"]

@@ -18,6 +18,8 @@ mypy = ">=1.14,<2"
 
 [pypi-dependencies]
 solenoid-calculator = { path = ".", editable = true }
+shiny = ">=1.8,<2"
+shinylive = "==0.8.12"
 
 [tasks]
 test = "pytest"
@@ -26,4 +28,6 @@ lint = "ruff check ."
 format = "ruff format ."
 format-check = "ruff format --check ."
 typecheck = "mypy"
+app = "shiny run --host 127.0.0.1 --port 8000 src/app.py"
+export-site = "shinylive export src site"
 check = { depends-on = ["format-check", "lint", "typecheck", "test"] }
