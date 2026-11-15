@@ -57,6 +57,18 @@ print(result.inductance_h, result.resistance_ohm)
 - [Reference cases](docs/reference-cases.md)
 - [Implementation decisions](docs/implementation-notes.md)
 
+## Citation and releases
+
+Citation metadata for the current software version are provided in
+[`CITATION.cff`](CITATION.cff). GitHub exposes these metadata through its
+**Cite this repository** control. The release history and notable changes are
+documented in [`CHANGELOG.md`](CHANGELOG.md).
+
+Versioned source snapshots are intended to be archived through the Zenodo
+GitHub integration. Cite the DOI of the exact software version used in a
+reproducible analysis. A Zenodo DOI badge and DOI metadata will be added after
+the first archived GitHub release.
+
 ## Web deployment
 
 The public interface is exported with Shinylive, so the same Python
